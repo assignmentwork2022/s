@@ -283,16 +283,16 @@
       submitButton.innerHTML = 'Sending...';
       submitButton.disabled = true;
 
-      // Prepare email parameters
+      // Prepare email parameters to match your template
       const templateParams = {
-        to_name: 'Assignment Works',
-        from_name: name,
-        from_email: email,
-        course: `Course: ${course}`,
-        title: `Title: ${title}`,
-        deadline: `Deadline: ${deadline}`,
-        message: `Message: ${message}`,
-        time: `Time: ${time}`
+        from_name: name,      // for {{from_name}}
+        name: name,           // for From Name
+        email: email,         // for Reply To and {{email}}
+        time: time,           // for {{time}}
+        course: course,       // send only the value
+        title: title,         // send only the value
+        deadline: deadline,   // send only the value
+        message: message      // send only the value
       };
 
       // Send email using EmailJS
