@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Assignment Works - Professional Academic Support</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init("iSjgV_d4_e3BRpeW4");
+    })();
+  </script>
   <style>
     :root {
       --primary-color: #2563eb;
@@ -241,10 +247,12 @@
     function validateForm() {
       const name = document.getElementById('name').value;
       const email = document.getElementById('email').value;
+      const course = document.getElementById('course').value;
       const title = document.getElementById('title').value;
+      const deadline = document.getElementById('deadline').value;
       const message = document.getElementById('message').value;
 
-      if (!name || !email || !title || !message) {
+      if (!name || !email || !course || !title || !deadline || !message) {
         alert('Please fill in all fields before submitting.');
         return false;
       }
@@ -256,8 +264,32 @@
         return false;
       }
 
-      alert('Thank you for your submission! We will contact you shortly.');
-      return true;
+      // Get current time
+      const now = new Date();
+      const time = now.toLocaleString();
+
+      // Send email using EmailJS
+      const templateParams = {
+        from_name: name,
+        from_email: email,
+        course: course,
+        title: title,
+        deadline: deadline,
+        message: message,
+        time: time
+      };
+
+      emailjs.send('service_iyvi579', 'template_default', templateParams, 'X6xu09d0ps1gw7erdAee0')
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+          alert('Thank you for your submission! We will contact you shortly.');
+          document.getElementById('contact-form').reset();
+        }, function(error) {
+          console.log('FAILED...', error);
+          alert('Sorry, there was an error sending your message. Please try again later.');
+        });
+
+      return false; // Prevent form from submitting traditionally
     }
 
     // Smooth scrolling for navigation links
@@ -266,6 +298,61 @@
         e.preventDefault();
         const targetId = this.getAttribute('href');
         document.querySelector(targetId).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    function calculatePrice() {
+      const workType = document.getElementById('work-type').value;
+      const wordCount = parseInt(document.getElementById('word-count').value);
+      const deadlineDays = parseInt(document.getElementById('deadline-days').value);
+      const academicLevel = document.getElementById('academic-level').value;
+
+      if (!workType || !wordCount || !deadlineDays || !academicLevel) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      // Base price per 1000 words
+      let basePrice = 0;
+      switch(workType) {
+        case 'assignment':
+          basePrice = 50;
+          break;
+        case 'dissertation':
+          basePrice = 60;
+          break;
+        case 'research':
+          basePrice = 70;
+          break;
+      }
+
+      // Adjust for academic level
+      if (academicLevel === 'phd') {
+        basePrice *= 1.5;
+      }
+
+      // Calculate total price
+      let totalPrice = (wordCount / 1000) * basePrice;
+
+      // Urgency fee
+      if (deadlineDays <= 3) {
+        totalPrice *= 1.5;
+      } else if (deadlineDays <= 7) {
+        totalPrice *= 1.3;
+      }
+
+      // Display result
+      const priceResult = document.getElementById('price-result');
+      priceResult.innerHTML = `Estimated Price: £${totalPrice.toFixed(2)}`;
+    }
+
+    // Add smooth scrolling for all internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
           behavior: 'smooth'
         });
       });
@@ -361,6 +448,9 @@
             <li>• International Consultancy Project</li>
             <li>• Applied Business Research</li>
           </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> Strategy, Leadership, Finance, Global Business
+          </div>
         </div>
         <div class="course-card">
           <strong>MSc International Business Management</strong>
@@ -370,6 +460,9 @@
             <li>• International Management Competencies</li>
             <li>• Consultancy Project or Dissertation</li>
           </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> Global Business, Sustainability, Entrepreneurship
+          </div>
         </div>
         <div class="course-card">
           <strong>MSc International Marketing</strong>
@@ -379,6 +472,9 @@
             <li>• Entrepreneurial Marketing</li>
             <li>• Dissertation</li>
           </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> Marketing Strategy, Consumer Behavior, Global Markets
+          </div>
         </div>
         <div class="course-card">
           <strong>MSc Data Science & Artificial Intelligence</strong>
@@ -388,6 +484,9 @@
             <li>• Neural Networks</li>
             <li>• Ethics and AI</li>
           </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> AI, Machine Learning, Data Analytics, Python
+          </div>
         </div>
         <div class="course-card">
           <strong>MSc Cyber Security</strong>
@@ -397,6 +496,9 @@
             <li>• Network Security</li>
             <li>• Research Methods</li>
           </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> Security, Forensics, Ethical Hacking, Networks
+          </div>
         </div>
         <div class="course-card">
           <strong>MSc Artificial Intelligence</strong>
@@ -406,13 +508,177 @@
             <li>• AI Development Project</li>
             <li>• Seminar Series</li>
           </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> AI, Deep Learning, Robotics, Machine Learning
+          </div>
+        </div>
+        <div class="course-card">
+          <strong>MSc Finance & Investment</strong>
+          <ul style="list-style: none; padding-left: 0; margin-top: 1rem;">
+            <li>• Financial Markets & Instruments</li>
+            <li>• Investment Analysis</li>
+            <li>• Risk Management</li>
+            <li>• Financial Modeling</li>
+          </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> Finance, Investment, Risk Management, Markets
+          </div>
+        </div>
+        <div class="course-card">
+          <strong>MSc Digital Marketing</strong>
+          <ul style="list-style: none; padding-left: 0; margin-top: 1rem;">
+            <li>• Social Media Marketing</li>
+            <li>• SEO & Content Strategy</li>
+            <li>• Digital Analytics</li>
+            <li>• E-commerce Marketing</li>
+          </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> Digital Marketing, SEO, Social Media, Analytics
+          </div>
+        </div>
+        <div class="course-card">
+          <strong>MSc Project Management</strong>
+          <ul style="list-style: none; padding-left: 0; margin-top: 1rem;">
+            <li>• Project Planning & Control</li>
+            <li>• Risk Management</li>
+            <li>• Agile Methodologies</li>
+            <li>• Project Leadership</li>
+          </ul>
+          <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-color);">
+            <strong>Keywords:</strong> Project Management, Agile, Leadership, Risk
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="testimonials">
+      <h2>Student Success Stories</h2>
+      <div class="card-grid">
+        <div class="course-card">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <img src="https://img.icons8.com/ios-filled/50/2563eb/user-male-circle.png" alt="Student" style="width: 40px; height: 40px;">
+            <div>
+              <strong>James Wilson</strong>
+              <div style="font-size: 0.9rem; color: var(--primary-color);">MSc Data Science</div>
+            </div>
+          </div>
+          <p>"The dissertation help was exceptional. I received a distinction grade thanks to the expert guidance and support."</p>
+        </div>
+        <div class="course-card">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <img src="https://img.icons8.com/ios-filled/50/2563eb/user-female-circle.png" alt="Student" style="width: 40px; height: 40px;">
+            <div>
+              <strong>Sarah Thompson</strong>
+              <div style="font-size: 0.9rem; color: var(--primary-color);">MBA</div>
+            </div>
+          </div>
+          <p>"Professional service with excellent quality. My assignments were always delivered on time and met all requirements."</p>
+        </div>
+        <div class="course-card">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <img src="https://img.icons8.com/ios-filled/50/2563eb/user-male-circle.png" alt="Student" style="width: 40px; height: 40px;">
+            <div>
+              <strong>Michael Chen</strong>
+              <div style="font-size: 0.9rem; color: var(--primary-color);">MSc Cyber Security</div>
+            </div>
+          </div>
+          <p>"The research support was invaluable. The team helped me with complex technical concepts and methodology."</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="why-choose">
+      <h2>Why Choose Us</h2>
+      <div class="card-grid">
+        <div class="course-card">
+          <strong>Expert Writers</strong>
+          <p>UK-qualified professionals with extensive academic experience</p>
+        </div>
+        <div class="course-card">
+          <strong>100% Original</strong>
+          <p>Plagiarism-free content with proper citations and references</p>
+        </div>
+        <div class="course-card">
+          <strong>On-time Delivery</strong>
+          <p>Never miss a deadline with our timely delivery guarantee</p>
+        </div>
+        <div class="course-card">
+          <strong>24/7 Support</strong>
+          <p>Round-the-clock assistance for all your queries</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="pricing">
+      <h2>Price Calculator</h2>
+      <div class="card-grid">
+        <div class="course-card" style="grid-column: 1 / -1;">
+          <form id="price-calculator" style="display: grid; gap: 1rem;">
+            <div class="form-group">
+              <label for="work-type">Type of Work</label>
+              <select id="work-type" required>
+                <option value="">Select Type</option>
+                <option value="assignment">Assignment</option>
+                <option value="dissertation">Dissertation</option>
+                <option value="research">Research Paper</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="word-count">Word Count</label>
+              <input type="number" id="word-count" min="1000" step="500" required placeholder="Enter word count">
+            </div>
+            <div class="form-group">
+              <label for="deadline-days">Days Until Deadline</label>
+              <input type="number" id="deadline-days" min="1" max="30" required placeholder="Enter days">
+            </div>
+            <div class="form-group">
+              <label for="academic-level">Academic Level</label>
+              <select id="academic-level" required>
+                <option value="">Select Level</option>
+                <option value="masters">Masters</option>
+                <option value="phd">PhD</option>
+              </select>
+            </div>
+            <button type="button" onclick="calculatePrice()">Calculate Price</button>
+            <div id="price-result" style="text-align: center; font-size: 1.2rem; font-weight: bold; color: var(--primary-color);"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="faq">
+      <h2>Frequently Asked Questions</h2>
+      <div class="card-grid">
+        <div class="course-card">
+          <strong>How long does it take to complete an assignment?</strong>
+          <p>Delivery time depends on the complexity and length of your assignment. We can handle urgent deadlines, but we recommend giving us at least 24-48 hours for best quality.</p>
+        </div>
+        <div class="course-card">
+          <strong>Is your work plagiarism-free?</strong>
+          <p>Yes, all our work is 100% original and plagiarism-free. We provide a free plagiarism report with every assignment.</p>
+        </div>
+        <div class="course-card">
+          <strong>Can I request revisions?</strong>
+          <p>Yes, we offer unlimited free revisions until you're completely satisfied with the work.</p>
+        </div>
+        <div class="course-card">
+          <strong>How do you ensure quality?</strong>
+          <p>Our work goes through multiple quality checks, including proofreading, plagiarism scanning, and expert review.</p>
+        </div>
+        <div class="course-card">
+          <strong>What payment methods do you accept?</strong>
+          <p>We accept all major credit cards, PayPal, and bank transfers. All payments are secure and encrypted.</p>
+        </div>
+        <div class="course-card">
+          <strong>Can I communicate with my writer?</strong>
+          <p>Yes, you can communicate directly with your assigned writer through our secure messaging system.</p>
         </div>
       </div>
     </div>
 
     <div class="container" id="contact">
       <h2>Get Assignment Help</h2>
-      <form action="#" method="post" onsubmit="return validateForm()">
+      <form id="contact-form" onsubmit="return validateForm()">
         <div class="form-group">
           <label for="name">Full Name</label>
           <input type="text" id="name" name="name" required placeholder="Enter your full name">
