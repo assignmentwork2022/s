@@ -299,25 +299,20 @@
         time: `Time: ${time}`
       };
 
-      // Send email using EmailJS with better error handling
+      // Send email using EmailJS
       emailjs.send('service_iyvi579', 'template_pod5bjj', templateParams)
         .then(function(response) {
           console.log('SUCCESS!', response.status, response.text);
           alert('Thank you for your submission! We will contact you shortly.');
           document.getElementById('contact-form').reset();
-        }, function(error) {
+        })
+        .catch(function(error) {
           console.error('FAILED...', error);
-          let errorMessage = 'Sorry, there was an error sending your message. ';
-          if (error.text) {
-            console.error('Error details:', error.text);
-            if (error.text.includes('template')) {
-              errorMessage += 'Please try again later.';
-            } else if (error.text.includes('service')) {
-              errorMessage += 'Our email service is temporarily unavailable.';
-            }
+          if (error && error.status) {
+            alert('Error status: ' + error.status + '\nError text: ' + error.text + '\n\nSorry, there was an error sending your message. Please contact us directly at pathwayglobalsolutions@gmail.com');
+          } else {
+            alert('Sorry, there was an error sending your message. Please contact us directly at pathwayglobalsolutions@gmail.com');
           }
-          errorMessage += '\n\nPlease contact us directly at pathwayglobalsolutions@gmail.com';
-          alert(errorMessage);
         })
         .finally(function() {
           // Reset button state
